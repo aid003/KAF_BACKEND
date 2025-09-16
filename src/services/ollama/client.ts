@@ -16,10 +16,21 @@ interface Document {
 }
 
 
+export async function getAvailableModels(): Promise<string[]> {
+  try {
+    const models = await ollama.list();
+    return models.models.map((model: any) => model.name);
+  } catch (error) {
+    console.error("Ошибка при получении списка моделей:", error);
+    return [];
+  }
+}
+
 export async function askQuestion(
   userQuery: string,
   documents: Document[],
-  socketId?: string
+  socketId?: string,
+  model: string = "owl/t-lite"
 ): Promise<string> {
   let prompt: string;
 
@@ -53,7 +64,7 @@ ${context}
 
   try {
     const responseStream = await ollama.chat({
-      model: "owl/t-lite",
+      model: model,
       messages: [{ role: "user", content: prompt }],
       stream: true,
     });

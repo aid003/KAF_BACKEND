@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Upload</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Test Upload</h1>
+    <input type="file" id="fileInput" accept=".pdf">
+    <button onclick="uploadFile()">Upload</button>
+    <div id="status"></div>
+    <div id="progress"></div>
+
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const statusDiv = document.getElementById('status');
+            const progressDiv = document.getElementById('progress');
+            
+            if (!fileInput.files[0]) {
+                statusDiv.textContent = 'Please select a file';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('files', fileInput.files[0]);
+
+            try {
+                statusDiv.textContent = 'Uploading...';
+                
+                const response = await axios.post('http://localhost:5041/api/uploads', formData, {
+                    headers: {
+                        'X-Socket-ID': 'test-socket-id'
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        if (progressEvent.total) {
+                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            progressDiv.textContent = `Upload Progress: ${percentCompleted}%`;
+                        }
+                    }
+                });
+
+                statusDiv.textContent = 'Success: ' + JSON.stringify(response.data);
+                progressDiv.textContent = 'Upload completed!';
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusDiv.textContent = 'Error: ' + error.message;
+                
+                if (error.response) {
+                    statusDiv.textContent += ' - Response: ' + JSON.stringify(error.response.data);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

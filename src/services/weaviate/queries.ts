@@ -11,6 +11,17 @@ export const searchBySimilarity = async (queryText: string, limit = 5) => {
   const client = await connectToWeaviate();
 
   try {
+    const existingCollections =
+      (await client.collections.listAll()) as ExtendedCollectionConfig[];
+    const exists = existingCollections.find(
+      (col) => col.name === collectionConfig.class
+    );
+    
+    if (!exists) {
+      logger.info(`📚 Коллекция ${collectionConfig.class} не существует, создаю...`);
+      await createCollection();
+    }
+
     const collection = client.collections.get(collectionConfig.class);
     const result = await collection.query.nearText(queryText, { limit });
 
@@ -26,6 +37,17 @@ export const searchByKeyword = async (queryText: string, limit = 5) => {
   const client = await connectToWeaviate();
 
   try {
+    const existingCollections =
+      (await client.collections.listAll()) as ExtendedCollectionConfig[];
+    const exists = existingCollections.find(
+      (col) => col.name === collectionConfig.class
+    );
+    
+    if (!exists) {
+      logger.info(`📚 Коллекция ${collectionConfig.class} не существует, создаю...`);
+      await createCollection();
+    }
+
     const collection = client.collections.get(collectionConfig.class);
     const result = await collection.query.bm25(queryText, { limit });
 
@@ -45,6 +67,17 @@ export const searchHybrid = async (
   const client = await connectToWeaviate();
 
   try {
+    const existingCollections =
+      (await client.collections.listAll()) as ExtendedCollectionConfig[];
+    const exists = existingCollections.find(
+      (col) => col.name === collectionConfig.class
+    );
+    
+    if (!exists) {
+      logger.info(`📚 Коллекция ${collectionConfig.class} не существует, создаю...`);
+      await createCollection();
+    }
+
     const collection = client.collections.get(collectionConfig.class);
     const result = await collection.query.hybrid(queryText, { alpha, limit });
 
@@ -108,15 +141,23 @@ export const addDocument = async (document: any): Promise<void> => {
     const exists = existingCollections.find(
       (col) => col.name === collectionConfig.class
     );
+    
+    let collection;
     if (!exists) {
-      throw new Error(`Коллекция ${collectionConfig.class} не существует`);
+      logger.info(`📚 Коллекция ${collectionConfig.class} не существует, создаю...`);
+      collection = await createCollection();
+      if (!collection) {
+        throw new Error(`Не удалось создать коллекцию ${collectionConfig.class}`);
+      }
+    } else {
+      collection = client.collections.get(collectionConfig.class);
     }
 
-    const collection = client.collections.get(collectionConfig.class);
     await collection.data.insert(document);
     logger.info("✅ Документ успешно добавлен");
   } catch (error) {
     logger.error(`❌ Ошибка при добавлении документа: ${error}`);
+    throw error; // Пробрасываем ошибку дальше для обработки в вызывающем коде
   }
 };
 

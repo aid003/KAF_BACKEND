@@ -6,7 +6,7 @@ import crudRoutes from "./routes/crud";
 const router = Router();
 
 router.use("/", healthRoutes);
-router.use("/", uploadRoutes);
+router.use("/api", uploadRoutes);
 router.use("/api", crudRoutes);
 
 export { router };

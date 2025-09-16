@@ -1,1 +1,1 @@
-export { askQuestion } from "./client";
+export { askQuestion, getAvailableModels } from "./client";
