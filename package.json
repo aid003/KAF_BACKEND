@@ -1,0 +1,37 @@
+{
+  "name": "kaf-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "node --no-warnings -r ts-node/register src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "install": "^0.13.0",
+    "log4js": "^6.9.1",
+    "morgan": "^1.10.0",
+    "multer": "1.4.5-lts.1",
+    "ollama": "^0.5.14",
+    "pdfjs-dist": "^4.10.38",
+    "socket.io": "^4.8.1",
+    "weaviate-client": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.5",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

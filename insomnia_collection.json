@@ -1,0 +1,174 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-02-16T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2024.1.0",
+  "resources": [
+    {
+      "_id": "wrk_1234567890abcdef",
+      "parentId": null,
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Weaviate API",
+      "description": "",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "fld_1",
+      "parentId": "wrk_1234567890abcdef",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Search",
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_2",
+      "parentId": "wrk_1234567890abcdef",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Collections",
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_3",
+      "parentId": "wrk_1234567890abcdef",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Documents",
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_4",
+      "parentId": "wrk_1234567890abcdef",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Process",
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_1",
+      "parentId": "fld_1",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Search by Similarity",
+      "method": "POST",
+      "url": "http://localhost:5041/api/search/similarity",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"queryText\": \"пример текста\",\n  \"limit\": 5\n}"
+      },
+      "_type": "request"
+    },
+    {
+      "_id": "req_2",
+      "parentId": "fld_1",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Search by Keyword",
+      "method": "POST",
+      "url": "http://localhost:5041/api/search/keyword",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"queryText\": \"ключевые слова\",\n  \"limit\": 5\n}"
+      },
+      "_type": "request"
+    },
+    {
+      "_id": "req_3",
+      "parentId": "fld_1",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Hybrid Search",
+      "method": "POST",
+      "url": "http://localhost:5041/api/search/hybrid",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"queryText\": \"пример текста\",\n  \"limit\": 5,\n  \"alpha\": 0.5\n}"
+      },
+      "_type": "request"
+    },
+    {
+      "_id": "req_4",
+      "parentId": "fld_2",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Create Collection",
+      "method": "POST",
+      "url": "http://localhost:5041/api/collections/create",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_5",
+      "parentId": "fld_2",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Delete Collections",
+      "method": "POST",
+      "url": "http://localhost:5041/api/collections/delete",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_6",
+      "parentId": "fld_3",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Test Add Document",
+      "method": "POST",
+      "url": "http://localhost:5041/api/documents/test",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    },
+    {
+      "_id": "req_7",
+      "parentId": "fld_4",
+      "modified": 1699462018277,
+      "created": 1699462018277,
+      "name": "Start Local Process",
+      "method": "POST",
+      "url": "http://localhost:5041/api/process/start",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "_type": "request"
+    }
+  ]
+}
