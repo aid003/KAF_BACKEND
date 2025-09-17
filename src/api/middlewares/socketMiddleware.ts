@@ -12,7 +12,7 @@ declare global {
 
 export const socketMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Получаем socket ID из заголовков или query параметров
-  const socketId = req.headers['x-socket-id'] || req.query.socketId;
+  const socketId = req.headers['x-socket-id'] || req.headers['X-Socket-ID'] || req.query.socketId;
   
   console.log("SocketMiddleware: Получен запрос с socket ID:", socketId);
   console.log("SocketMiddleware: Доступные sockets:", Array.from(io.sockets.sockets.keys()));

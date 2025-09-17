@@ -1,4 +1,11 @@
 node_modules
 dist
+build
+out
 books
 parser.log
+/uploads
+
+# Compiled JavaScript files
+*.js
+*.js.map

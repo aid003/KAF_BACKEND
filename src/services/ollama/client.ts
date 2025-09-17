@@ -33,10 +33,26 @@ export async function askQuestion(
   userQuery: string,
   documents: Document[],
   socketId?: string,
-  model?: string
+  model?: string,
+  history?: Array<{
+    sender: "assistant" | "user";
+    text: string;
+    searchType?: string;
+    useRAG?: boolean;
+  }>
 ): Promise<string> {
   const defaultModel = process.env.OLLAMA_MODEL || "owl/t-lite";
   const selectedModel = model || defaultModel;
+  
+  // Формируем историю чата для контекста
+  let chatHistory = "";
+  if (history && history.length > 0) {
+    chatHistory = history
+      .map(msg => `${msg.sender === "user" ? "Пользователь" : "Ассистент"}: ${msg.text}`)
+      .join("\n");
+    chatHistory = `История чата:\n${chatHistory}\n\n`;
+  }
+
   let prompt: string;
 
   if (documents && documents.length > 0) {
@@ -51,7 +67,7 @@ export async function askQuestion(
       })
       .join("\n\n");
 
-    prompt = `Используя следующие документы, ответь на вопрос ниже. В ответе обязательно укажи прямой ответ и ссылки на источники (название книги и номера страниц), откуда была взята информация.
+    prompt = `${chatHistory}Используя следующие документы, ответь на вопрос ниже. В ответе обязательно укажи прямой ответ и ссылки на источники (название книги и номера страниц), откуда была взята информация.
 
 Документы:
 ${context}
@@ -60,7 +76,7 @@ ${context}
 
 Ответ:`;
   } else {
-    prompt = `Я не смог найти информацию в достоверных источниках, но вот что я об этом думаю:
+    prompt = `${chatHistory}Я не смог найти информацию в достоверных источниках, но вот что я об этом думаю:
 
 Вопрос: ${userQuery}
 

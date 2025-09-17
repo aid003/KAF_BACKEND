@@ -30,68 +30,81 @@ io.on("connection", (socket) => {
 
   socket.on(
     "chat message",
-    async (payload: { text: string; searchType?: string }) => {
+    async (payload: { 
+      text: string; 
+      searchType: string; 
+      useRAG: boolean; 
+      history: Array<{
+        sender: "assistant" | "user";
+        text: string;
+        searchType?: string;
+        useRAG?: boolean;
+      }>;
+    }) => {
       logger.info(
-        `Получено сообщение от ${socket.id}: ${payload.text} - ${payload.searchType}`
+        `Получено сообщение от ${socket.id}: ${payload.text} - ${payload.searchType} - useRAG: ${payload.useRAG} - history: ${payload.history.length} сообщений`
       );
 
+      // Если useRAG отключен, отвечаем напрямую без поиска
+      if (!payload.useRAG) {
+        io.emit("loading answer", { text: "Генерирую ответ без поиска" });
+        await delay(1000);
+        
+        const directAnswer = await askQuestion(
+          payload.text,
+          [], // Пустой массив для прямого ответа
+          socket.id,
+          OLLAMA_MODEL,
+          payload.history // Передаем историю для контекста
+        );
+        
+        io.emit(
+          "chat message",
+          directAnswer ? directAnswer : "Не удалось сгенерировать ответ."
+        );
+        return;
+      }
+
+      // RAG поиск включен
       let data = { text: "Ищу похожую информацию" };
       io.emit("loading answer", data);
       await delay(3000);
 
+      let searchResults: any[] = [];
+
       switch (payload.searchType) {
         case "1":
-          const answer1 = await searchHybrids({ queryText: payload.text });
-          io.emit("loading answer", { text: "Генерирую ответ" });
-          await delay(2000);
-          const llmAnswer1 = await askQuestion(
-            payload.text,
-            answer1 ? answer1 : [],
-            socket.id,
-            OLLAMA_MODEL
-          );
-          io.emit(
-            "chat message",
-            llmAnswer1 ? llmAnswer1 : "Не удалось найти информацию."
-          );
+          searchResults = (await searchHybrids({ queryText: payload.text })) || [];
           break;
         case "2":
-          const answer2 = await searchSimilarity({ queryText: payload.text });
-          io.emit("loading answer", { text: "Генерирую ответ" });
-          await delay(2000);
-          const llmAnswer2 = await askQuestion(
-            payload.text,
-            answer2 ? answer2 : [],
-            socket.id,
-            OLLAMA_MODEL
-          );
-          io.emit(
-            "chat message",
-            llmAnswer2 ? llmAnswer2 : "Не удалось найти информацию."
-          );
+          searchResults = (await searchSimilarity({ queryText: payload.text })) || [];
           break;
         case "3":
-          const answer3 = await searchKeyword({ queryText: payload.text });
-          io.emit("loading answer", { text: "Генерирую ответ" });
-          await delay(2000);
-          const llmAnswer3 = await askQuestion(
-            payload.text,
-            answer3 ? answer3 : [],
-            socket.id,
-            OLLAMA_MODEL
-          );
-          io.emit(
-            "chat message",
-            llmAnswer3 ? llmAnswer3 : "Не удалось найти информацию."
-          );
+          searchResults = (await searchKeyword({ queryText: payload.text })) || [];
           break;
         default:
           io.emit(
             "chat message",
-            "Что-то пошло не так. Перезагрузите страницу (CTRL + F5)."
+            "Неизвестный тип поиска. Используйте 1, 2 или 3."
           );
-          break;
+          return;
       }
+
+      io.emit("loading answer", { text: "Генерирую ответ на основе найденной информации" });
+      await delay(2000);
+      
+      const llmAnswer = await askQuestion(
+        payload.text,
+        searchResults ? searchResults : [],
+        socket.id,
+        OLLAMA_MODEL,
+        payload.history // Передаем историю для контекста
+      );
+      
+      io.emit(
+        "chat message",
+        llmAnswer ? llmAnswer : "Не удалось найти информацию."
+      );
     }
   );
 
