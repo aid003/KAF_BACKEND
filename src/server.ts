@@ -9,6 +9,7 @@ import { askQuestion } from "./services/ollama";
 dotenv.config();
 
 const PORT = process.env.PORT || 5041;
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "owl/t-lite";
 
 const server = http.createServer(app);
 
@@ -46,7 +47,8 @@ io.on("connection", (socket) => {
           const llmAnswer1 = await askQuestion(
             payload.text,
             answer1 ? answer1 : [],
-            socket.id
+            socket.id,
+            OLLAMA_MODEL
           );
           io.emit(
             "chat message",
@@ -60,7 +62,8 @@ io.on("connection", (socket) => {
           const llmAnswer2 = await askQuestion(
             payload.text,
             answer2 ? answer2 : [],
-            socket.id
+            socket.id,
+            OLLAMA_MODEL
           );
           io.emit(
             "chat message",
@@ -74,7 +77,8 @@ io.on("connection", (socket) => {
           const llmAnswer3 = await askQuestion(
             payload.text,
             answer3 ? answer3 : [],
-            socket.id
+            socket.id,
+            OLLAMA_MODEL
           );
           io.emit(
             "chat message",

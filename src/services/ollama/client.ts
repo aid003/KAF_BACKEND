@@ -1,5 +1,8 @@
 import ollama from "ollama";
 import { io } from "../../server";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 interface Document {
   metadata: any;
@@ -30,8 +33,10 @@ export async function askQuestion(
   userQuery: string,
   documents: Document[],
   socketId?: string,
-  model: string = "owl/t-lite"
+  model?: string
 ): Promise<string> {
+  const defaultModel = process.env.OLLAMA_MODEL || "owl/t-lite";
+  const selectedModel = model || defaultModel;
   let prompt: string;
 
   if (documents && documents.length > 0) {
@@ -64,7 +69,7 @@ ${context}
 
   try {
     const responseStream = await ollama.chat({
-      model: model,
+      model: selectedModel,
       messages: [{ role: "user", content: prompt }],
       stream: true,
     });
