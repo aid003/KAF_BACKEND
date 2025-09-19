@@ -3,7 +3,7 @@ import healthRoutes from "./routes/health";
 import uploadRoutes from "./routes/upload";
 import crudRoutes from "./routes/crud";
 
-const router = Router();
+const router: Router = Router();
 
 router.use("/", healthRoutes);
 router.use("/api", uploadRoutes);

@@ -13,11 +13,39 @@ const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "owl/t-lite";
 
 const server = http.createServer(app);
 
+// Допустимые origins — можно добавить IP сервера и другие хосты
+const allowedOrigins = new Set([
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3005',
+  'http://127.0.0.1:3005',
+  'http://localhost:5041',
+  'http://127.0.0.1:5041',
+  'http://192.168.63.222:3000', 
+  'http://192.168.63.222:3005', 
+  'http://192.168.63.222:5041',
+  'http://192.168.63.222' 
+]);
+
+function originIsAllowed(origin?: string | null) {
+  if (!origin) return true; // allow non-browser (curl, internal)
+  if (allowedOrigins.has(origin)) return true;
+  // разрешить любую 192.168.*.* подсеть (если нужно)
+  try {
+    const u = new URL(origin);
+    if (u.hostname.startsWith('192.168.')) return true;
+  } catch (e) {}
+  return false;
+}
+
 export const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: (origin, callback) => {
+      if (originIsAllowed(origin)) callback(null, true);
+      else callback(new Error('Origin not allowed by CORS'), false);
+    },
+    methods: ['GET', 'POST'],
+    credentials: true
   },
 });
 

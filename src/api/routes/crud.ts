@@ -10,7 +10,7 @@ import {
 import logger from "../../services/utils/logger";
 import { startLocalProcess } from "../../services/utils/fragmentTextServer";
 
-const router = Router();
+const router: Router = Router();
 
 router.post("/search/similarity", async (req: Request, res: Response) => {
   const { queryText, limit = 5 } = req.body;

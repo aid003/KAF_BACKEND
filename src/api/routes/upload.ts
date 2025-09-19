@@ -17,7 +17,7 @@ const upload = multer({
   limits: { fileSize: MAX_FILE_SIZE },
 });
 
-const router = Router();
+const router: Router = Router();
 
 router.post(
   "/uploads",

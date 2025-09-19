@@ -7,16 +7,38 @@ import logRequests from "./api/middlewares/logRequests";
 
 dotenv.config();
 
-const app = express();
+const app: express.Application = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(logRequests);
 
+// Допустимые origins для Express API
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:3005',
+  'http://127.0.0.1:3005',
+  'http://localhost:5041',
+  'http://127.0.0.1:5041',
+  'http://192.168.63.222:3000', 
+  'http://192.168.63.222:3005', 
+  'http://192.168.63.222:5041',
+  'http://192.168.63.222',
+  'http://192.168.63.222:80'
+];
+
 app.use(
   cors({
-    origin: "*",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Socket-ID"],
+    credentials: true,
   })
 );
 
