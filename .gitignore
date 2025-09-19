@@ -7,5 +7,4 @@ parser.log
 /uploads
 
 # Compiled JavaScript files
-*.js
 *.js.map
