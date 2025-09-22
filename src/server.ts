@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
 
       // Если useRAG отключен, отвечаем напрямую без поиска
       if (!payload.useRAG) {
-        io.emit("loading answer", { text: "Генерирую ответ без поиска" });
+        socket.emit("loading answer", { text: "Генерирую ответ без поиска" });
         await delay(1000);
         
         const directAnswer = await askQuestion(
@@ -86,7 +86,7 @@ io.on("connection", (socket) => {
           payload.history // Передаем историю для контекста
         );
         
-        io.emit(
+        socket.emit(
           "chat message",
           directAnswer ? directAnswer : "Не удалось сгенерировать ответ."
         );
@@ -95,7 +95,7 @@ io.on("connection", (socket) => {
 
       // RAG поиск включен
       let data = { text: "Ищу похожую информацию" };
-      io.emit("loading answer", data);
+      socket.emit("loading answer", data);
       await delay(3000);
 
       let searchResults: any[] = [];
@@ -111,14 +111,14 @@ io.on("connection", (socket) => {
           searchResults = (await searchKeyword({ queryText: payload.text })) || [];
           break;
         default:
-          io.emit(
+          socket.emit(
             "chat message",
             "Неизвестный тип поиска. Используйте 1, 2 или 3."
           );
           return;
       }
 
-      io.emit("loading answer", { text: "Генерирую ответ на основе найденной информации" });
+      socket.emit("loading answer", { text: "Генерирую ответ на основе найденной информации" });
       await delay(2000);
       
       const llmAnswer = await askQuestion(
@@ -129,7 +129,7 @@ io.on("connection", (socket) => {
         payload.history // Передаем историю для контекста
       );
       
-      io.emit(
+      socket.emit(
         "chat message",
         llmAnswer ? llmAnswer : "Не удалось найти информацию."
       );
